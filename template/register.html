@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farmer Register</title>
+ <style>
+    body {
+    font-family: Arial, sans-serif;
+    background: #e0f7e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    width: 300px;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #2e7d32;
+    margin-bottom: 20px;
+  }
+  
+  form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #1b5e20;
+  }
+  
+  p {
+    text-align: center;
+    margin-top: 15px;
+  }
+  
+  a {
+    color: #2e7d32;
+    text-decoration: none;
+  }
+
+  
+ </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Register</h2>
+    <form  method="POST">
+        {% csrf_token %}
+             {% if error %}
+             <div class="alert alert-danger">{{error}}</div>
+             {% else %}
+             {% endif %}
+
+             {% if msg %}
+             <div class="alert alert-success">{{msg}}</div>
+             
+             {% endif %}
+      <input type="text" name="uname" placeholder="User_Name" required />
+      <input type="email" name="uemail" placeholder="Email" required />
+      <input type="password" name="upass" placeholder="Password" required />
+      <input type="password" name="ucpass" placeholder="Confirm Password" required />
+      
+      <button type="submit">Register</button>
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </form>
+  </div>
+</body>
+</html>
+{% endblock main %}

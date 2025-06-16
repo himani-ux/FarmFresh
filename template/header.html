@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FarmFresh | Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+    }
+
+    .navbar {
+      background-color: #2e7d32;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      padding: 6px 12px;
+    }
+
+    .nav-links li .btn {
+      background: white;
+      color: #2e7d32;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    .nav-links li .btn:hover {
+      background: #c8e6c9;
+    }
+
+    .profile-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-pic {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+      cursor: pointer;
+    }
+
+    .dropdown-toggle,
+    .upload-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 45px;
+      background-color: white;
+      color: #2e7d32;
+      min-width: 160px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      z-index: 1;
+      border-radius: 5px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown a {
+  color: white;
+  background-color: #2e7d32;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.dropdown a:hover {
+  background-color: #1b5e20;
+}
+
+    .hero {
+      background: url('https://images.unsplash.com/photo-1582281298051-6015fda8ff6b?auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+      color: rgb(90, 145, 88);
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .cta-btn {
+      background-color: #fff;
+      color: #2e7d32;
+      padding: 12px 24px;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .cta-btn:hover {
+      background-color: #c8e6c9;
+    }
+
+    .main-content {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .main-content h2 {
+      font-size: 32px;
+      color: #2e7d32;
+      margin-bottom: 20px;
+    }
+
+    .footer {
+      background-color: #2e7d32;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Profile Modal Styling */
+    #profileModal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      text-align: center;
+    }
+
+    #modalImg {
+      margin-top: 50px;
+      max-height: 80vh;
+      border-radius: 10px;
+    }
+
+    #profileModal span {
+      color: white;
+      font-size: 30px;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌱 Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">🌾FarmFresh</div>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/products">Products</a></li>
+      <li><a href="/about_section">About</a></li>
+
+      {% if request.user.is_authenticated %}
+      <li><a href="/logout" class="btn">Logout</a></li>
+      <li>
+        <a href="/viewcart/">
+          <button class="btn btn-info">🛒</button>
+        </a>
+      </li>
+      <li><a aria-current="page">Welcome {{ request.user.username }}! </a></li>
+
+      <!-- 👤 Profile Controls -->
+      <li>
+        <div class="profile-container">
+          <!-- Profile Image -->
+          <img src="{{ request.user.profile.image.url|default:'/static/images/default-profile.png' }}"
+               alt="Profile" class="profile-pic"
+               onclick="viewProfileImage(this.src)">
+
+          <!-- Upload Form -->
+          <form id="uploadForm" action="{% url 'upload_profile_image' %}" method="POST" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            <input type="file" id="profileUpload" name="profile_image" accept="image/*"
+                   onchange="document.getElementById('uploadForm').submit();">
+          </form>
+
+          <!-- Upload Button -->
+          <button class="upload-btn" aria-label="Upload Profile Picture" onclick="document.getElementById('profileUpload').click()">+</button>
+
+          <!-- Dropdown Toggle -->
+          <button class="dropdown-toggle" aria-label="Toggle Profile Dropdown" onclick="toggleDropdown()"></button>
+
+          <!-- Dropdown -->
+          <div class="dropdown" id="profileDropdown">
+            <a href="/profile">My Profile</a>
+            <a href="/myorders/">My Orders</a>
+            <a href="/help">Help</a>
+          </div>
+        </div>
+      </li>
+
+      {% else %}
+      <li><a href="/login" class="btn">Login</a></li>
+      <li><a href="/register" class="btn">Register</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <!-- 🖼️ Image Modal -->
+  <div id="profileModal">
+    <span onclick="document.getElementById('profileModal').style.display='none'">&times;</span>
+    <img id="modalImg">
+  </div>
+
+  {% comment %} <!-- 🌾 Hero Section -->
+  <section class="hero">
+    <h1>Fresh from the Farm</h1>
+    <p>Natural. Organic. Delivered to your door.</p>
+    <a href="/products" class="cta-btn">Shop Now</a>
+  </section>
+
+  <!-- 📦 Main Content -->
+  <div class="main-content">
+    <h2>Why Choose FarmFresh?</h2>
+    <p>We partner with local farmers to bring you the freshest produce directly from the source.</p>
+  </div>
+
+  <!-- 🔚 Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 FarmFresh. All rights reserved.</p>
+  </footer> {% endcomment %}
+
+  <!-- 🔽 Scripts -->
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById("profileDropdown");
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropdown-toggle')) {
+        const dropdown = document.getElementById("profileDropdown");
+        if (dropdown && dropdown.style.display === "block") {
+          dropdown.style.display = "none";
+        }
+      }
+    }
+
+    function viewProfileImage(src) {
+      const modal = document.getElementById("profileModal");
+      const modalImg = document.getElementById("modalImg");
+      modalImg.src = src;
+      modal.style.display = "block";
+    }
+
+    // Close dropdown if a link inside it is clicked
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll('#profileDropdown a').forEach(link => {
+        link.addEventListener('click', () => {
+          document.getElementById('profileDropdown').style.display = 'none';
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
+

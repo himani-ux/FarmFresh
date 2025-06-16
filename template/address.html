@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f9f9f9;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 30px;
+        text-align: center;
+        color: #333;
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-top: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #444;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: border-color 0.3s;
+    }
+
+    input:focus, textarea:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        background-color: #28a745;
+        color: white;
+        padding: 12px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #218838;
+    }
+
+    .alert {
+        background-color: #ffeeba;
+        color: #856404;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    .messages {
+  list-style-type: none;
+  padding: 10px;
+}
+
+.messages li {
+  background-color: #f8d7da;  /* light red */
+  color: #721c24;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+}
+</style>
+
+<div class="form-container">
+    <h1>Enter Your Delivery Address</h1>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="form-group">
+            {% if ferror %}
+                <div class="alert alert-danger">{{ ferror }}</div>
+            {% endif %}
+            <label for="full_name">Full Name</label>
+            <input type="text" id="full_name" name="fname" >
+        </div>
+        
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" rows="4" oninput="validateAddress(this)"></textarea>
+        </div>
+
+        <div class="form-group">
+            {% if serror %}
+                <div class="alert alert-danger">{{ serror }}</div>
+            {% endif %}
+            <label for="state">State</label>
+            <select id="state" name="state" onchange="updateCities()">
+                <option value="">-- Select State --</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Puducherry">Puducherry</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            {% if cerror %}
+                <div class="alert alert-danger">{{ cerror }}</div>
+            {% endif %}
+            <label for="city">City</label>
+            <select id="city" name="city">
+                <option value="">-- Select City --</option>
+            </select>
+        </div>
+
+        {% if messages %}
+        <ul class="messages">
+       {% for message in messages %}
+       <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+       </ul>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="zipcode">Zip Code</label>
+            <input type="text" id="zipcode" name="zipcode" maxlength="6" oninput="validateZipcode(this)">
+        </div>
+         
+         {% if messages %}
+        <ul class="messages">
+       {% for message in messages %}
+       <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+       </ul>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="text" id="mobile" name="mobile">
+        </div>
+
+        <button type="submit" class="btn">Place Order</button>
+    </form>
+</div>
+
+<script>
+
+    const citiesByState = {
+        "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Tirupati", "Nellore", "Kurnool"],
+        "Arunachal Pradesh": ["Itanagar", "Tawang", "Ziro", "Pasighat", "Bomdila"],
+        "Assam": ["Guwahati", "Dibrugarh", "Silchar", "Jorhat", "Tezpur", "Nagaon"],
+        "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia"],
+        "Chhattisgarh": ["Raipur", "Bilaspur", "Durg", "Korba", "Jagdalpur"],
+        "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa"],
+        "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar"],
+        "Haryana": ["Gurgaon", "Faridabad", "Panipat", "Karnal", "Rohtak"],
+        "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala", "Mandi"],
+        "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro"],
+        "Karnataka": ["Bengaluru", "Mysuru", "Mangalore", "Hubli", "Belgaum"],
+        "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur"],
+        "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur", "Gwalior", "Ujjain"],
+        "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Thane", "Aurangabad"],
+        "Manipur": ["Imphal"],
+        "Meghalaya": ["Shillong"],
+        "Mizoram": ["Aizawl"],
+        "Nagaland": ["Kohima", "Dimapur"],
+        "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Sambalpur"],
+        "Punjab": ["Amritsar", "Ludhiana", "Chandigarh", "Jalandhar"],
+        "Rajasthan": ["Jaipur", "Udaipur", "Jodhpur", "Kota"],
+        "Sikkim": ["Gangtok"],
+        "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Salem"],
+        "Telangana": ["Hyderabad", "Warangal", "Nizamabad"],
+        "Tripura": ["Agartala"],
+        "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Noida"],
+        "Uttarakhand": ["Dehradun", "Haridwar", "Nainital"],
+        "West Bengal": ["Kolkata", "Siliguri", "Asansol", "Durgapur"],
+        "Andaman and Nicobar Islands": ["Port Blair"],
+        "Chandigarh": ["Chandigarh"],
+        "Dadra and Nagar Haveli and Daman and Diu": ["Silvassa", "Daman", "Diu"],
+        "Delhi": ["New Delhi", "Rohini", "Dwarka"],
+        "Jammu and Kashmir": ["Srinagar", "Jammu"],
+        "Ladakh": ["Leh", "Kargil"],
+        "Lakshadweep": ["Kavaratti"],
+        "Puducherry": ["Puducherry", "Karaikal"]
+    };
+
+    function updateCities() {
+        const stateSelect = document.getElementById("state");
+        const citySelect = document.getElementById("city");
+        const selectedState = stateSelect.value;
+
+        // Clear current options
+        citySelect.innerHTML = '<option value="">-- Select City --</option>';
+
+        if (selectedState && citiesByState[selectedState]) {
+            const cities = citiesByState[selectedState];
+            cities.forEach(city => {
+                const option = document.createElement("option");
+                option.value = city;
+                option.text = city;
+                citySelect.appendChild(option);
+            });
+        }
+    }
+
+    function validateAlphabets(input) {
+        // Allow only alphabets and spaces
+        input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    }
+
+    function validateAddress(input) {
+        // Allow alphabets, numbers, commas, dots, hyphens, and spaces in address
+        input.value = input.value.replace(/[^a-zA-Z0-9\s,.-]/g, '');
+    }
+
+    function validateZipcode(input) {
+        // Allow only digits and max length 6
+        input.value = input.value.replace(/\D/g, '');
+        if (input.value.length > 6) {
+            input.value = input.value.slice(0, 6);
+        }
+    }
+</script>
+{% endblock main %}
+
+

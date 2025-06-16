@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<style>
+    .payment-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 70vh;
+        flex-direction: column;
+    }
+
+    #rzp-button1 {
+        padding: 12px 30px;
+        font-size: 18px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+
+    #rzp-button1:hover {
+        background-color: #28a745;
+        transform: scale(1.05);
+    }
+</style>
+
+<div class="payment-container">
+    <h2 class="mb-4">Complete Your Payment</h2>
+    <button class="btn btn-success" id="rzp-button1">Pay with Razorpay</button>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {
+        "key": "rzp_test_6wZ986hRbPrnoS",
+        "amount": "{{ payment.amount }}",
+        "currency": "INR",
+        "name": "FarmFresh",
+        "description": "Test Transaction",
+        "image": "https://example.com/your_logo",
+        "order_id": "{{ payment.id }}",
+        "handler": function (response) {
+            window.location.href = "http://127.0.0.1:8000/mail/";
+        },
+        "prefill": {
+            "name": "Gaurav Kumar",
+            "email": "gaurav.kumar@example.com",
+            "contact": "9000090000"
+        },
+        "notes": {
+            "address": "Razorpay Corporate Office"
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.on('payment.failed', function (response) {
+        alert("Payment failed: " + response.error.description);
+        console.log(response.error);
+    });
+
+    document.getElementById('rzp-button1').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+    }
+</script>
+{% endblock %}

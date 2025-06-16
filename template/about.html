@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+
+<style>
+    .about-section {
+        background-color: #f5fff5;
+        padding: 50px 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #2e4d2e;
+    }
+
+    .about-container {
+        max-width: 1000px;
+        margin: auto;
+        text-align: center;
+    }
+
+    .about-section h2 {
+        font-size: 36px;
+        color: #3a913f;
+        margin-bottom: 20px;
+    }
+
+    .about-section p {
+        font-size: 18px;
+        line-height: 1.8;
+        margin-bottom: 15px;
+    }
+
+    .highlight {
+        color: #2f7c31;
+        font-weight: bold;
+    }
+
+    .about-img {
+        margin-top: 30px;
+    }
+
+    .about-img img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 600px) {
+        .about-section h2 {
+            font-size: 28px;
+        }
+
+        .about-section p {
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div class="about-section">
+    <div class="about-container">
+        <h2>About FarmFresh</h2>
+        <p>
+            <span class="highlight">FarmFresh</span> is your one-stop online destination for all agricultural needs.
+            From high-quality seeds and organic fertilizers to modern farming tools, we empower farmers with trusted products delivered right to their doorstep.
+        </p>
+        <p>
+            Our mission is to support the farming community by promoting sustainable and smart agriculture through easy access to reliable products.
+        </p>
+        <p>
+            We believe that technology and tradition can work hand in hand to cultivate a better future for agriculture in India and beyond.
+        </p>
+       
+    </div>
+</div>
+
+{% endblock main %}
+

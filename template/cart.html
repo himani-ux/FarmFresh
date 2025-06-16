@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+{% block main %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<style>
+  .cart-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.4s ease-in-out;
+  }
+
+  .cart-card h2 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .cart-card input[type="text"] {
+    width: 50px;
+    text-align: center;
+    margin: 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .summary-box {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="container my-5">
+
+  <!-- 🛒 Cart Section -->
+  <div class="row mb-4">
+    <div class="col-md-10 mx-auto">
+      <h4 class="mb-4">Cart Section</h4>
+      {% for cart in carts %}
+        <div class="cart-card row">
+          <div class="col-md-4">
+            <img src="{{ cart.pid.pimage.url|default:'/static/images/default.png' }}" height="200px" width="100%" class="img-fluid rounded" alt="{{ cart.pid.pname }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h2>{{ cart.pid.pname }}</h2>
+              {% if cart.pid.category == 1 or cart.pid.category == 2 or cart.pid.category == 5 %}
+                <h5>Price: ₹{{ cart.pid.price }} (Per Kg)</h5>
+              {% elif cart.pid.category == 4 %}
+                <h5>Price: ₹{{ cart.pid.price }} (Per litre)</h5>
+              {% else %}
+                <h5>Price: ₹{{ cart.pid.price }}</h5>
+              {% endif %}
+
+              <p class="my-3 d-flex align-items-center">
+                <strong class="mr-2">Quantity:</strong>
+               <a href="/updateqty/0/{{ cart.id }}/"><button class="btn btn-outline-danger btn-sm">-</button></a>
+                <input type="text" value="{{ cart.qty }}" readonly>
+                <a href="/updateqty/1/{{ cart.id }}/"><button class="btn btn-outline-danger btn-sm">+</button></a>
+              </p>
+
+              <p>
+                <a href="/removecart/{{ cart.id }}/">
+                  <button class="btn btn-danger btn-sm">
+                    <i class="bi bi-trash3"></i> Remove
+                  </button>
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="alert alert-info">Your cart is empty.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- 💰 Summary Section -->
+  <div class="row">
+    <div class="col-md-6 mx-auto">
+      <div id="error-message" class="alert alert-danger d-none text-center" role="alert">
+        Your cart is EMPTY! Please add product.
+      </div>
+
+      <div class="summary-box text-center">
+        <h4>Total Items: {{ items }}</h4>
+        <h4>Total Price: ₹{{ total }}</h4>
+
+        {% if items > 0 %}
+            <a href="/checkaddress/">
+            <button class="btn btn-success w-100 mt-3">Continue</button>
+          </a>
+        {% else %}
+          <button class="btn btn-success w-100 mt-3" onclick="showWarning()">Continue</button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showWarning() {
+    const msg = document.getElementById('error-message');
+    msg.classList.remove('d-none');
+    msg.scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+
+{% endblock main %}
